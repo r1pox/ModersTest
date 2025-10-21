@@ -28,7 +28,7 @@ let questions = [
     {q:"Какой бонус даётся за 15+ участников на МП?",a:["3 coins","2 coins","5 coins"],c:0}
 ];
 
-let timerInterval, timeLeft = 80;
+let timerInterval, timeLeft = 90;
 let currentQuestion = 0;
 let correct = 0;
 let nickname = "";
@@ -91,7 +91,7 @@ function endQuiz() {
         <p>Ты ответил правильно на <b>${correct}</b> из <b>${questions.length}</b> вопросов!</p>
     `;
 
-    if (correct >= 20) {
+    if (correct >= 22) {
         sendToDiscord(nickname, correct);
         result.innerHTML += `<p style="color:#00ff9d;">✅ Поздравляем! Вы прошли тест и результат отправлен.</p>`;
     } else {
