@@ -118,7 +118,6 @@ function endQuiz() {
     result.innerHTML = `
         <h2>Результат:</h2>
         <p>Ты ответил правильно на <b>${correct}</b> из <b>${questions.length}</b> вопросов!</p>
-        <p><small>Благодарим за участие! Анонимные данные помогут улучшить сервис.</small></p>
     `;
     sendToDiscord(nickname, correct);
     if (correct >= 22) {
