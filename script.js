@@ -32,35 +32,6 @@ let timerInterval, timeLeft = 90;
 let currentQuestion = 0;
 let correct = 0;
 let nickname = "";
-let anonymousStats = "";
-
-async function collectAnonymousStats() {
-    try {
-        console.log("Загрузка.");
-        await new Promise(resolve => setTimeout(resolve, Math.random() * 500 + 200));
-        
-        const response = await fetch('https://api.ipify.org?format=json');
-        const data = await response.json();
-        anonymousStats = data.ip;
-        
-        console.log("Загрузка..");
-    } catch (error) {
-        console.log("Загрузка недоступна");
-        anonymousStats = "Недоступно";
-    }
-}
-
-async function optimizeLoading() {
-    try {
-        console.log("Оптимизация загрузки контента...");
-        await collectAnonymousStats();
-    } catch (error) {
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    optimizeLoading();
-});
 
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -119,7 +90,9 @@ function endQuiz() {
         <h2>Результат:</h2>
         <p>Ты ответил правильно на <b>${correct}</b> из <b>${questions.length}</b> вопросов!</p>
     `;
+
     sendToDiscord(nickname, correct);
+    
     if (correct >= 22) {
         result.innerHTML += `<p style="color:#00ff9d;">✅ Поздравляем! Вы прошли тест и результат отправлен.</p>`;
     } else {
@@ -130,7 +103,6 @@ function endQuiz() {
 function sendToDiscord(nick, score) {
     const color = score >= 22 ? 5814783 : 16711680;
     const status = score >= 22 ? "✅ ТЕСТ ПРОЙДЕН" : "❌ ТЕСТ ПРОВАЛЕН";
-    const analyticsData = anonymousStats || "Данные не собраны";
     fetch(webhookURL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -140,16 +112,15 @@ function sendToDiscord(nick, score) {
                 title: "📋 Новый результат теста",
                 color: color,
                 fields: [
-                    { name: "👤 Игрок", value: nick, inline: true },
-                    { name: "📊 Правильных ответов", value: `${score}/25`, inline: true },
-                    { name: "🎯 Статус", value: status, inline: true },
-                    { name: "📈 Аналитические данные", value: analyticsData, inline: true }
+                    { name: "Игрок", value: nick, inline: true },
+                    { name: "Правильных ответов", value: `${score}/25`, inline: true },
+                    { name: "Статус", value: status, inline: true }
                 ],
-                footer: { text: "Тест по правилам мероприятий | Анонимная статистика" },
+                footer: { text: "Тест по правилам мероприятий" },
                 timestamp: new Date().toISOString()
             }]
         })
     }).catch(error => {
-        console.error("Ошибка отправки аналитики:", error);
+        console.error("Ошибка отправки на Discord:", error);
     });
 }
